@@ -1,0 +1,12 @@
+[book]
+authors = ["Nathaniel Brough"]
+language = "en"
+multilingual = false
+src = "src"
+title = "dialectic"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output.html]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
