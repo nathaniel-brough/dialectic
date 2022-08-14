@@ -14,6 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install mdbook-mermaid
+        run: |
+          cargo install mdbook-mermaid
+
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v1
         with:
