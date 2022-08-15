@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - dialectic</title>
+        <title>Technical overview - dialectic</title>
 
 
         <!-- Custom HTML head -->
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html" class="active">Introduction</a></li><li class="chapter-item expanded "><a href="technical_overview.html"><strong aria-hidden="true">1.</strong> Technical overview</a></li><li class="chapter-item expanded "><a href="analysis_preconditions.html"><strong aria-hidden="true">2.</strong> Analysis preconditions</a></li><li class="chapter-item expanded "><a href="behavioral_definitions.html"><strong aria-hidden="true">3.</strong> Behavioral definitions</a></li><li class="chapter-item expanded "><a href="construct_bom.html"><strong aria-hidden="true">4.</strong> Constructing a BOM</a></li><li class="chapter-item expanded "><a href="generating_a_netlist.html"><strong aria-hidden="true">5.</strong> Generating a netlist</a></li><li class="chapter-item expanded "><a href="place_and_route.html"><strong aria-hidden="true">6.</strong> Automatic place and route</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="technical_overview.html" class="active"><strong aria-hidden="true">1.</strong> Technical overview</a></li><li class="chapter-item expanded "><a href="analysis_preconditions.html"><strong aria-hidden="true">2.</strong> Analysis preconditions</a></li><li class="chapter-item expanded "><a href="behavioral_definitions.html"><strong aria-hidden="true">3.</strong> Behavioral definitions</a></li><li class="chapter-item expanded "><a href="construct_bom.html"><strong aria-hidden="true">4.</strong> Constructing a BOM</a></li><li class="chapter-item expanded "><a href="generating_a_netlist.html"><strong aria-hidden="true">5.</strong> Generating a netlist</a></li><li class="chapter-item expanded "><a href="place_and_route.html"><strong aria-hidden="true">6.</strong> Automatic place and route</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -142,59 +142,96 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="dialectic"><a class="header" href="#dialectic">Dialectic</a></h1>
-<p><a href="https://github.com/silvergasp/dialectic/discussions">Discussions</a></p>
-<h2 id="about"><a class="header" href="#about">About</a></h2>
-<p>Dialectic is an <em>early-stage</em> project to create a modern alternative to
-graphical PCB designs. This is a code-first approach to PCB design. Some of the
-approaches taken in dialectic may be somewhat controversial.</p>
-<p>Why dialectic? The name came from an intentional play of words between similar
-sounding terms dielectric (meaning conductive insulator) and dialectic (meaning
-discourse around apposing views).</p>
-<p>Dialectic draws inspiration from existing hardware description languages
-including;</p>
+                        <h1 id="technical-overview"><a class="header" href="#technical-overview">Technical overview</a></h1>
+<p>The high level design for the dialectic HDL follows a similar
+approach to what a team of engineers would follow. In this case
+dialectic will implement this as a pipelined series of grouped passes.</p>
+<blockquote>
+<p>Note: This approach is largely inspired by the <a href="https://circt.llvm.org/">CIRCT</a> project. With which
+this project
+may integrate with as an additional dialect at some point.</p>
+</blockquote>
+<p>Passes are grouped logically to ensure that each pass can operate on similar
+data. For example consider the below group of passes.</p>
+<pre class="mermaid">graph TB
+A[Define Environmental Constraints] --&gt; C;
+B[Define Manufacturing Constraints] --&gt; C;
+C[Finalize BOM and manufacturing constraints]
+</pre>
+<p>First we constrain the environmental conditions that the end product needs to
+operate in for example this may look something like;</p>
+<pre><code class="language-rust ignore">let environment = dialectic::environment()
+                    .temperature_range(-10.0,60.0)
+                    .humidity_range(0.0, 80.0)
+                    .pressure_range(500.mbar(), 1500.mbar());
+
+// Manufacturing constraints from PCBway
+let pcb_constraints = dialectic::pcb_manufacturing()
+                    .stackup(
+                        dialectic::Stackup::new(vec![
+                            Material::Silkscreen(None),
+                            Material::Soldermask(None),
+                            Material::Copper(35.um()),
+                            Material::Prepreg(0.11.mm(), 4.29.rel_permeability()),
+                            // ...
+                        ])
+                    )
+                    .width_range(5.0, 500.0)
+                    .height_range(6.0, 1100.0)
+                    .min_trace(0.1)
+                    .min_spacing(0.1);
+                    // more constraints... ;
+
+let assembly_constraints = dialectic::assembly()
+                    .components_on_top()
+                    .components_on_bottom()
+                    .max_reflow_temperature(270.0);
+                    // more constrains... ;
+
+let preconditions = dialectic::Preconditions::new(
+    environment,
+    pcb_constraints,
+    assembly_constraints,
+)
+</code></pre>
+<blockquote>
+<p>Note: For the time being we will be using Rust as a generator language. But
+this may change depending on requirements.</p>
+</blockquote>
+<p>By setting these preconditions we can;</p>
 <ul>
-<li>Verilog</li>
-<li>VHDL</li>
-<li>Chisel</li>
-<li>XLS</li>
-</ul>
-<p>And circuit description languages including;</p>
+<li>Build a set of filters from component selection based on;
 <ul>
-<li>pycircuit</li>
-<li>skidl</li>
+<li>Component size.</li>
+<li>Spacing between pads on footprints.</li>
+<li>Operational environment.</li>
+<li>etc.</li>
 </ul>
-<p>Dialectic differs from the above in that it is intended to address areas areas
-that digital logic HDL's don't. e.g.</p>
-<ul>
-<li>Analog signals and circuits.</li>
-<li>Power distribution.</li>
-<li>Firmware integration.</li>
-<li>BOM generation and optimization.</li>
-<li>PCB Automatic placement and routing.</li>
+</li>
+<li>Define a set of constraints for placement and routing.</li>
 </ul>
-<h2 id="contributing"><a class="header" href="#contributing">Contributing</a></h2>
-<p>Currently as dialectic is in the planning phase. To contribute just jump on the
-<a href="https://github.com/silvergasp/dialectic/discussions">discussions tab</a>. At this
-point all input is welcome e.g.</p>
-<ul>
-<li>Feature requests.</li>
-<li>Suggestions.</li>
-<li>Requests for consultation (Use issues tab for this).</li>
-</ul>
-<h2 id="sponsors"><a class="header" href="#sponsors">Sponsors</a></h2>
-<p>Dialectic currently does not have any sponsors 😔. Please consider sponsoring
-this project to help make dialectic sustainable long-term.</p>
-<h2 id="status"><a class="header" href="#status">Status</a></h2>
-<p>Currently dialectic is in the planning phase and minimal or no implementation
-exists for.</p>
+<h2 id="high-level-pipeline"><a class="header" href="#high-level-pipeline">High level pipeline</a></h2>
+<p>While the first example show how a group of design passes <strong>might</strong> work it
+doesn't give a full overview of what the entire system will look like.</p>
+<pre class="mermaid">graph TB
+A[Analysis Preconditions] --&gt; C;
+B[Behavioral definitions] --&gt; C;
+C[Construct BOM] --&gt; D;
+D[Generate netlist] --&gt; E;
+D --&gt;|Failure| C;
+E[Automatically place and route] --&gt;|Success| F;
+E --&gt;|Failure| C;
+F[Generate manufacturing files]
+</pre>
+<p>To the untrained eye this system may seem like a simple one to put together.
+However there are some very challenging and difficult problems to solve.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
-                            <a rel="next" href="technical_overview.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="analysis_preconditions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,7 +242,7 @@ exists for.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
-                    <a rel="next" href="technical_overview.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="analysis_preconditions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
