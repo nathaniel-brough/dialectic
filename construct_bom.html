@@ -291,7 +291,7 @@ as a minimum sampling rate.</p>
 later time e.g. using a ranging sensor that measures distance to the ground. So
 it's still useful to keep the original abstract concept of a step counter.</p>
 </blockquote>
-<pre><code class="language-mermaid">graph TB
+<pre class="mermaid">graph TB
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
@@ -300,21 +300,21 @@ style A fill:#f9f
 style B fill:#f9f
 style C fill:#f9f
 style D fill:#f9f
-</code></pre>
+</pre>
 <p>So this is where we can start searching for a part in our database. To simplify
 this example I've only put one sensor that will work. So find the 'Accelerometer'
 sensor. So we find the part 'Accel101' that matches our sampling requirements.</p>
-<pre><code class="language-mermaid">graph BT
+<pre class="mermaid">graph BT
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
 D[Display to show us the step count]
 E[Accel101]--&gt;|provides|A
-</code></pre>
+</pre>
 <p>Now we find that 'Accel101' has requirements on it's own. Specifically it needs
 power and an SPI controller. So we search for a power provider that will work
 for our accelerometer and we find a battery.</p>
-<pre><code class="language-mermaid">graph BT
+<pre class="mermaid">graph BT
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
@@ -326,10 +326,10 @@ style D fill:#f9f
 
 E[Accel101]--&gt;|provides acceleration|A
 F[Battery]--&gt;|provides power|E
-</code></pre>
+</pre>
 <p>We then search for a device that can act as a SPI controller and find the
 'ControlFreak1000' micro-controller.</p>
-<pre><code class="language-mermaid">graph BT
+<pre class="mermaid">graph BT
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
@@ -342,14 +342,14 @@ style D fill:#f9f
 E[Accel101]--&gt;|provides acceleration|A
 F[Battery]--&gt;|provides power|E
 G[ControlFreak1000]--&gt;|provides SPI controller|E
-</code></pre>
+</pre>
 <p>The control freak micro-controller also by coincidence happens to provide
 functionality for two more of our behavioral definitions via it's cpu;</p>
 <ul>
 <li>Computation system to interpret sensor output,</li>
 <li>Counter to keep track of steps.</li>
 </ul>
-<pre><code class="language-mermaid">graph BT
+<pre class="mermaid">graph BT
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
@@ -364,13 +364,13 @@ F[Battery] --&gt; |provides power| E
 G[ControlFreak1000] --&gt; |provides SPI controller|E
 G --&gt; |Provides computation| B
 G --&gt; |Provides counter| C
-</code></pre>
+</pre>
 <p>The micro-controller however has a it's own requirements. Again we have to solve
 the power problem. However as we've already chosen the battery, and the voltage
 should work we just have to check that the battery can provide enough power for
 both the accelerometer and the micro-controller at the same time. 0.1 + 0.01 &lt; 1
 so we can keep the battery in our proposed BOM.</p>
-<pre><code class="language-mermaid">graph BT
+<pre class="mermaid">graph BT
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
@@ -386,7 +386,7 @@ G[ControlFreak1000] --&gt; |provides SPI controller|E
 F[Battery] --&gt; |provides power| G
 G --&gt; |Provides computation| B
 G --&gt; |Provides counter| C
-</code></pre>
+</pre>
 <p>We have one final behavior that we need to meet 'Display to show us the step
 count', So we search through our database and find our 'Display100' part. Again
 the display requires some power, we check our current BOM to see if we have
@@ -394,7 +394,7 @@ anything that can provide that. We find the battery, we just need to check that
 the battery can supply power to the micro-controller, accelerometer and display
 all at once. It can so we at this point we have an automatically generated BOM,
 that meets our needs.</p>
-<pre><code class="language-mermaid">graph BT
+<pre class="mermaid">graph BT
 A[Sensor to detect a step]
 B[Computation system to interpret sensor output]
 C[Counter to keep track of steps]
@@ -412,7 +412,7 @@ G --&gt; |Provides computation| B
 G --&gt; |Provides counter| C
 H[Display] --&gt; |Provides display|D
 G[ControlFreak1000] --&gt; |provides SPI controller|H
-</code></pre>
+</pre>
 <h3 id="database"><a class="header" href="#database">Database</a></h3>
 <p><em>Part: ControlFreak1000</em></p>
 <ul>

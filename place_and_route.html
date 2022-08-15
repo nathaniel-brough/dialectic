@@ -183,7 +183,7 @@ auto-router to route a decent circuit. In other words garbage in garbage out.</l
 <p>The current proposal for auto-routing is to use a multi-stage iterative approach.
 giving the auto-router full controllability over the design process. So simplified
 pipeline would look something like the following.</p>
-<pre><code class="language-mermaid">graph TB
+<pre class="mermaid">graph TB
 S[Start] --&gt; A
 style S fill:#f9f
 A[Auto-place parts] --&gt; B
@@ -195,7 +195,7 @@ B --&gt; |Failure| E
 E[Modify part variants] --&gt; A
 B --&gt; |Success| D
 D[Done]
-</code></pre>
+</pre>
 <h3 id="routing-algorithm"><a class="header" href="#routing-algorithm">Routing algorithm</a></h3>
 <p>Routing algorithms started off fairly simple. With the first auto-router using
 Lee's maze solving algorithm. Which is essentially a grid based breadth first
@@ -218,12 +218,12 @@ you can minimize EMI and reduce signal integrity. While a power and/or ground
 planes may still be used it will still likely be useful to keep track of your
 routed return paths through those planes as intersections on the return path
 routing may result in increased current density.</p>
-<pre><code class="language-mermaid">graph LR
+<pre class="mermaid">graph LR
 
 A[Pin 1] --&gt;|Signal| B[Pin 2]
 B --&gt;|Vdd return path| A
 B --&gt;|GND return path| A
-</code></pre>
+</pre>
 <p>This approach has the most potential when routing 1-2 layer boards. For example
 a ground trace can be routed parallel to signal traces to minimize EMI and
 maximize signal integrity.</p>

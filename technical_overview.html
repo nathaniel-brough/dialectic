@@ -145,11 +145,11 @@ may integrate with as an additional dialect at some point.</p>
 </blockquote>
 <p>Passes are grouped logically to ensure that each pass can operate on similar
 data. For example consider the below group of passes.</p>
-<pre><code class="language-mermaid">graph TB
+<pre class="mermaid">graph TB
 A[Define Environmental Constraints] --&gt; C;
 B[Define Manufacturing Constraints] --&gt; C;
 C[Finalize BOM and manufacturing constraints]
-</code></pre>
+</pre>
 <p>First we constrain the environmental conditions that the end product needs to
 operate in for example this may look something like;</p>
 <pre><code class="language-rust ignore">let environment = dialectic::environment()
@@ -205,7 +205,7 @@ this may change depending on requirements.</p>
 <h2 id="high-level-pipeline"><a class="header" href="#high-level-pipeline">High level pipeline</a></h2>
 <p>While the first example show how a group of design passes <strong>might</strong> work it
 doesn't give a full overview of what the entire system will look like.</p>
-<pre><code class="language-mermaid">graph TB
+<pre class="mermaid">graph TB
 A[Analysis Preconditions] --&gt; C;
 B[Behavioral definitions] --&gt; C;
 C[Construct BOM] --&gt; D;
@@ -214,7 +214,7 @@ D --&gt;|Failure| C;
 E[Automatically place and route] --&gt;|Success| F;
 E --&gt;|Failure| C;
 F[Generate manufacturing files]
-</code></pre>
+</pre>
 <p>To the untrained eye this system may seem like a simple one to put together.
 However there are some very challenging and difficult problems to solve.</p>
 
