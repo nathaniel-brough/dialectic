@@ -4,6 +4,7 @@ language = "en"
 multilingual = false
 src = "src"
 title = "dialectic"
+google_analytics_id = "G-57HPN3C093"
 
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
